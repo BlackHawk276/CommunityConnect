@@ -1,6 +1,8 @@
 // Main app component with routing
 
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Landing from './pages/Landing';
 import { Login } from './pages/Login';
 import { RegisterNGO } from './pages/RegisterNGO';
@@ -12,30 +14,30 @@ import { VolunteerDashboard } from './pages/volunteer/VolunteerDashboard';
 import { BrowseTasks } from './pages/volunteer/BrowseTasks';
 import { MyApplications } from './pages/volunteer/MyApplications';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import Button from './components/Button';
-import { Home } from 'lucide-react';
-
-function PlaceholderPage({ title }: { title: string }) {
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary-50 via-white to-accent-50 p-4">
-      <div className="text-center">
-        <h1 className="text-4xl md:text-5xl font-bold font-display text-neutral-900 mb-4">
-          {title}
-        </h1>
-        <p className="text-2xl text-neutral-600 mb-8">Coming in Layer 3</p>
-        <Link to="/">
-          <Button variant="primary" size="lg" icon={Home}>
-            Back to Home
-          </Button>
-        </Link>
-      </div>
-    </div>
-  );
-}
+import { useAuthStore } from './store/authStore';
 
 export default function App() {
+  const initialize = useAuthStore(state => state.initialize);
+  const initialized = useAuthStore(state => state.initialized);
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  if (!initialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-neutral-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <BrowserRouter>
+      <Toaster position="top-right" />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
@@ -92,7 +94,6 @@ export default function App() {
           }
         />
 
-        <Route path="/admin/dashboard" element={<PlaceholderPage title="Admin Dashboard" />} />
       </Routes>
     </BrowserRouter>
   );

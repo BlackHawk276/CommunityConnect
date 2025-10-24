@@ -42,15 +42,20 @@ export const BrowseTasks: React.FC = () => {
     return true;
   });
 
-  const handleApply = (taskId: string) => {
+  const handleApply = async (taskId: string) => {
     const alreadyApplied = appliedTaskIds.includes(taskId);
     if (alreadyApplied) {
       toast.error('You have already applied to this task!');
       return;
     }
-    applyToTask(taskId);
-    toast.success('Application submitted successfully!');
-    setTimeout(() => window.location.reload(), 1000);
+    try {
+      await applyToTask(taskId);
+      toast.success('Application submitted successfully!');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      window.location.reload();
+    } catch (error) {
+      toast.error('Failed to submit application. Please try again.');
+    }
   };
 
   const isTaskApplied = (taskId: string) => appliedTaskIds.includes(taskId);

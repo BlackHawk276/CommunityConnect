@@ -54,20 +54,24 @@ export const CreateTask: React.FC = () => {
     setValue('requiredSkills', updated, { shouldValidate: true });
   };
 
-  const onSubmit = (data: TaskFormData) => {
-    createTask({
-      ...data,
-      ngoId: ngoUser.id,
-      ngo: {
-        organizationName: ngoUser.organizationName,
-        city: ngoUser.city,
-        logo: ngoUser.logo
-      },
-      status: 'active'
-    });
+  const onSubmit = async (data: TaskFormData) => {
+    try {
+      await createTask({
+        ...data,
+        ngoId: ngoUser.id,
+        ngo: {
+          organizationName: ngoUser.organizationName,
+          city: ngoUser.city,
+          logo: ngoUser.logo
+        },
+        status: 'active'
+      });
 
-    toast.success('Task created successfully!');
-    navigate('/ngo/my-tasks');
+      toast.success('Task created successfully!');
+      navigate('/ngo/my-tasks');
+    } catch (error) {
+      toast.error('Failed to create task. Please try again.');
+    }
   };
 
   return (
